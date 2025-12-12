@@ -1,0 +1,105 @@
+# -------------------------------
+# .NET / ASP.NET Core
+# -------------------------------
+
+bin/
+obj/
+out/
+*.exe
+*.dll
+*.pdb
+*.mdb
+*.log
+*.tmp
+*.db
+*.db-shm
+*.db-wal
+*.ldf
+*.ndf
+
+# Rider
+.idea/
+*.sln.iml
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.csproj.user
+*.dbmdl
+*.bak
+*.backup
+*.vscode
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*.cachefile
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.tlog
+
+# ASP.NET specific
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+launchSettings.json
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuget.props
+*.nuget.targets
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Logs
+*.log
+logs/
+log/
+
+# Coverage / Test results
+TestResults/
+*.coverage
+*.coveragexml
+*.trx
+
+# Entity Framework
+Migrations/obj/
+*.dbcontext.json
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Rider
+.idea/
+
+# Azure
+*.Publish.xml
+*.azurePubxml
+*.pubxml
+*.publishproj
+
+# Docker
+docker-compose.override.yml
+.env
+
+# Other
+*.swp
+*.DS_Store
+Thumbs.db
