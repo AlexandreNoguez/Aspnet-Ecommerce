@@ -1,53 +1,56 @@
-﻿using AspnetEcommerce.Application.Customer.UseCases.DTOs.CreateCustomer;
+﻿using AspnetEcommerce.Application.Customer.DTOs.CreateCustomer;
 using AspnetEcommercer.Domain.Contracts.Abstractions;
-using AspnetEcommercer.Domain.Customer.Entity;
+using AspnetEcommercer.Domain.Customer.Factory;
 using AspnetEcommercer.Domain.Customer.Repository;
 using AspnetEcommercer.Domain.Customer.ValueObject;
 
-public sealed class CreateCustomerUseCase
+namespace AspnetEcommerce.Application.Customer.UseCases.CreateCustomer;
+
+public sealed class CreateCustomerUseCase : ICreateCustomerUseCase
 {
     private readonly ICustomerRepository _customerRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateCustomerUseCase(ICustomerRepository customerRepository, IUnitOfWork unitOfWork)
+    public CreateCustomerUseCase(
+        ICustomerRepository customerRepository,
+        IUnitOfWork unitOfWork)
     {
         _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
-    public async Task<CreateCustomerOutput> ExecuteAsync(CreateCustomerInput input, CancellationToken ct = default)
+    public async Task<CreateCustomerOutput> ExecuteAsync(
+        CreateCustomerInput input,
+        CancellationToken ct = default)
     {
-        if (input == null)
-        {
-            throw new ArgumentNullException(nameof(input));
-        }
+        if (input is null) throw new ArgumentNullException(nameof(input));
 
-        // Basic application-level validation (cheap checks)
-        if (string.IsNullOrWhiteSpace(input.Name))
-        {
-            throw new ArgumentException("Name is required.", nameof(input.Name));
-        }
+        await _unitOfWork.BeginTransactionAsync(ct);
+
         try
         {
-            // Build domain objects
-            var address = Address.Create(input.Street, input.City, input.State, input.ZipCode, input.Number);
-
-            var customer = new CustomerEntity(
-                Guid.NewGuid(),
-                input.Name,
-                address,
-                isActive: false,
-                rewardPoints: 0
+            var address = Address.Create(
+                input.Street,
+                input.City,
+                input.State,
+                input.ZipCode,
+                input.Number
             );
 
-            await _customerRepository.AddAsync(customer, ct);
-            await _unitOfWork.CommitAsync();
+            var customer = CustomerFactory.CreateNewCustomer(input.Name, address);
 
-            return new CreateCustomerOutput(customer.Id);
+            await _customerRepository.AddAsync(customer, ct);
+            await _unitOfWork.CommitAsync(ct);
+
+            return new CreateCustomerOutput(
+                customer.Id,
+                customer.Name,
+                customer.IsActive,
+                customer.RewardPoints
+            );
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine(ex);
             await _unitOfWork.RollbackAsync(ct);
             throw;
         }

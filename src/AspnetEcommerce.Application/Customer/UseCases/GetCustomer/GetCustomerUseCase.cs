@@ -1,4 +1,4 @@
-﻿using AspnetEcommercer.Application.Customer.DTOs.GetCustomer;
+﻿using AspnetEcommerce.Application.Customer.UseCases.DTOs.GetCustomer;
 using AspnetEcommercer.Domain.Customer.Repository;
 
 namespace AspnetEcommercer.Application.Customer.UseCases.GetCustomer;
