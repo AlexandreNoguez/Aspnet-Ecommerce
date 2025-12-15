@@ -46,12 +46,19 @@ namespace AspnetEcommercer.Domain.Customer.Entity
 
         public void AddRewardPoints(int points)
         {
+            if (points < 0)
+            {
+                throw new Exception("Points must be positive");
+            }
+
             RewardPoints += points;
+            Validate();
         }
 
         public void ChangeAddress(Address address)
         {
-            Address = address;
+            Address = address ?? throw new ArgumentNullException(nameof(address));
+            Validate();
         }
 
         public void Validate()
@@ -60,9 +67,20 @@ namespace AspnetEcommercer.Domain.Customer.Entity
             {
                 throw new Exception("Id is required");
             }
-            if (Name.Length == 0)
+
+            if (string.IsNullOrWhiteSpace(Name))
             {
                 throw new Exception("Name is required");
+            }
+
+            if (RewardPoints < 0)
+            {
+                throw new Exception("Reward points cannot be negative");
+            }
+
+            if (IsActive && Address is null)
+            {
+                throw new Exception("Address is required when customer is active");
             }
         }
     }
