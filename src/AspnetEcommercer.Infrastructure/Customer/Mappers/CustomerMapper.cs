@@ -34,7 +34,7 @@ public static class CustomerMapper
             model.ZipCode is not null &&
             model.Number is not null)
         {
-            address = new Address(
+            address = Address.Create(
                 model.Street,
                 model.City,
                 model.State,
