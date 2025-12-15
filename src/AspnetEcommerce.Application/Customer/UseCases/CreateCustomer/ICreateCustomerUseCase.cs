@@ -1,4 +1,4 @@
-﻿using AspnetEcommercer.Application.Customer.DTOs.CreateCustomer;
+﻿using AspnetEcommerce.Application.Customer.UseCases.DTOs.CreateCustomer;
 
 namespace AspnetEcommerce.Application.Customer.UseCases.CreateCustomer
 {

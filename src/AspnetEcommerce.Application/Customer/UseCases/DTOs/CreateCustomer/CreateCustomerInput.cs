@@ -1,4 +1,4 @@
-﻿namespace AspnetEcommercer.Application.Customer.DTOs.CreateCustomer;
+﻿namespace AspnetEcommerce.Application.Customer.UseCases.DTOs.CreateCustomer;
 
 public sealed record CreateCustomerInput(
     string Name,
