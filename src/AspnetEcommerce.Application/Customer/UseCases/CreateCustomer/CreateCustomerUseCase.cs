@@ -9,10 +9,10 @@ public sealed class CreateCustomerUseCase
     private readonly ICustomerRepository _customerRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateCustomerUseCase(ICustomerRepository repo, IUnitOfWork uow)
+    public CreateCustomerUseCase(ICustomerRepository customerRepository, IUnitOfWork unitOfWork)
     {
-        _customerRepository = repo ?? throw new ArgumentNullException(nameof(repo));
-        _unitOfWork = uow ?? throw new ArgumentNullException(nameof(uow));
+        _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
     public async Task<CreateCustomerOutput> ExecuteAsync(CreateCustomerInput input, CancellationToken ct = default)
@@ -22,8 +22,7 @@ public sealed class CreateCustomerUseCase
             throw new ArgumentException("Name is required.", nameof(input.Name));
 
         // Build domain objects
-        var address = new Address(input.Street, input.City, input.State, input.ZipCode, input.Number);
-        address.Validate(); // or rely on constructor rules if you make it immutable later
+        var address = Address.Create(input.Street, input.City, input.State, input.ZipCode, input.Number);
 
         var customer = new CustomerEntity(
             Guid.NewGuid(),
