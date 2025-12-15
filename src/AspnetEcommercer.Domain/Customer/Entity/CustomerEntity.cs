@@ -14,10 +14,10 @@ namespace AspnetEcommercer.Domain.Customer.Entity
             this.Validate();
         }
 
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public Address? Address { get; set; }
-        public bool IsActive { get; set; }
+        public Guid Id { get; private set; }
+        public string Name { get; private set; }
+        public Address? Address { get; private set; }
+        public bool IsActive { get; private set; }
         public int RewardPoints { get; private set; }
 
         public Guid GetId()
