@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AspnetEcommercer.Domain\AspnetEcommercer.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
