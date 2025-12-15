@@ -1,4 +1,5 @@
-﻿using AspnetEcommercer.Domain.Contracts.Abstractions;
+﻿using AspnetEcommerce.Application.Customer.UseCases.CreateCustomer;
+using AspnetEcommercer.Domain.Contracts.Abstractions;
 using AspnetEcommercer.Domain.Customer.Repository;
 using AspnetEcommercer.Infrastructure.Customer.Repository;
 using AspnetEcommercer.Infrastructure.Database;
@@ -13,19 +14,19 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // DbContext
+        // DbContext (Infra)
         services.AddDbContext<DatabaseContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
 
-        // Repositories
-        services.AddScoped<ICustomerRepository, CustomerRepositoryEf>();
-
-        // Unit of Work
+        // Unit of Work (Infra)
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // Presentation
-        //services.AddScoped<CreateCustomerUseCase>();
-        //services.AddScoped<GetCustomerUseCase>();
+        // Repository (Infra)
+        services.AddScoped<ICustomerRepository, CustomerRepositoryEf>();
+
+        // Use Cases (Application)
+        //services.AddScoped<ICreateCustomerUseCase, CreateCustomerUseCase>();
+        services.AddScoped<ICreateCustomerUseCase, CreateCustomerUseCase>();
 
         return services;
     }
