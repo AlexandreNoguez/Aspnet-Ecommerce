@@ -5,11 +5,11 @@ namespace AspnetEcommercer.Infrastructure.Persistence
 {
 
 
-    public class UnitOrWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly DatabaseContext _context;
 
-        public UnitOrWork(DatabaseContext context)
+        public UnitOfWork(DatabaseContext context)
         {
             _context = context;
         }

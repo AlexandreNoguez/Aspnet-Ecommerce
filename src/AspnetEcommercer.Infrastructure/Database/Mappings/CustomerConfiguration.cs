@@ -32,7 +32,7 @@ namespace AspnetEcommercer.Infrastructure.Database.Mappings
             builder.Property(x => x.State).HasMaxLength(2);
             builder.Property(x => x.City).HasMaxLength(120);
             builder.Property(x => x.Street).HasMaxLength(200);
-            builder.Property(x => x.Number).HasMaxLength(6);
+            builder.Property(x => x.Number);
         }
     }
 }

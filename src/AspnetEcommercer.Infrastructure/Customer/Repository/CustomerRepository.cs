@@ -1,49 +1,62 @@
-﻿using AspnetEcommercer.Infrastructure.Customer.Models;
+﻿using AspnetEcommercer.Domain.Customer.Entity;
+using AspnetEcommercer.Domain.Customer.Repository;
+using AspnetEcommercer.Infrastructure.Customer.Mappers;
+using AspnetEcommercer.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace AspnetEcommercer.Infrastructure.Customer.Repository
+namespace AspnetEcommercer.Infrastructure.Customer.Repository;
+
+public class CustomerRepositoryEf : ICustomerRepository
 {
-    public class CustomerRepository
+    private readonly DatabaseContext _db;
+
+    public CustomerRepositoryEf(DatabaseContext db)
     {
-        private readonly DbContext _dbContext;
+        _db = db ?? throw new ArgumentNullException(nameof(db));
+    }
 
-        public CustomerRepository(DbContext dbContext)
-        {
-            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        }
+    public async Task AddAsync(CustomerEntity customer, CancellationToken ct = default)
+    {
+        var model = CustomerMapper.ToDbModel(customer);
+        await _db.Customers.AddAsync(model, ct);
 
-        public async Task CreateCustomer(CustomerDbModel customer)
-        {
-            _dbContext.Set<CustomerDbModel>().Add(customer);
-            await _dbContext.SaveChangesAsync();
-        }
+        // IMPORTANT: no SaveChanges here (use UnitOfWork)
+        // await _db.SaveChangesAsync(ct);
+    }
 
-        public async Task UpdateCustomer(CustomerDbModel customer)
-        {
-            _dbContext.Set<CustomerDbModel>().Update(customer);
-            await _dbContext.SaveChangesAsync();
-        }
+    public async Task UpdateAsync(CustomerEntity customer, CancellationToken ct = default)
+    {
+        var model = await _db.Customers.FirstOrDefaultAsync(x => x.Id == customer.Id, ct);
+        if (model is null) throw new InvalidOperationException("Customer not found.");
 
-        public async Task<CustomerDbModel?> GetCustomerById(Guid id)
-        {
-            return await _dbContext.Set<CustomerDbModel>().FindAsync(id);
-        }
+        CustomerMapper.ApplyToDbModel(customer, model);
+        // no SaveChanges here
+    }
 
-        public async Task<List<CustomerDbModel>> GetAllCustomers()
-        {
-            return await _dbContext.Set<CustomerDbModel>().ToListAsync();
-        }
+    public async Task<CustomerEntity?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        var model = await _db.Customers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id, ct);
 
-        public async Task DeleteCustomer(Guid id)
-        {
-            var customer = await _dbContext.Set<CustomerDbModel>().FindAsync(id);
-            if (customer != null)
-            {
-                _dbContext.Set<CustomerDbModel>().Remove(customer);
-                await _dbContext.SaveChangesAsync();
-            }
-        }
+        return model is null ? null : CustomerMapper.ToDomain(model);
+    }
 
+    public async Task<IReadOnlyList<CustomerEntity>> GetAllAsync(CancellationToken ct = default)
+    {
+        var models = await _db.Customers
+            .AsNoTracking()
+            .ToListAsync(ct);
 
+        return models.Select(CustomerMapper.ToDomain).ToList();
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+    {
+        var model = await _db.Customers.FirstOrDefaultAsync(x => x.Id == id, ct);
+        if (model is null) return;
+
+        _db.Customers.Remove(model);
+        // no SaveChanges here
     }
 }
