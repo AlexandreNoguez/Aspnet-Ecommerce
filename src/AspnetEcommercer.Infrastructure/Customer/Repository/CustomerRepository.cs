@@ -1,10 +1,10 @@
-﻿using AspnetEcommercer.Domain.Customer.Entity;
-using AspnetEcommercer.Domain.Customer.Repository;
-using AspnetEcommercer.Infrastructure.Customer.Mappers;
-using AspnetEcommercer.Infrastructure.Database;
+﻿using AspnetEcommerce.Domain.Customer.Entity;
+using AspnetEcommerce.Domain.Customer.Repository;
+using AspnetEcommerce.Infrastructure.Customer.Mappers;
+using AspnetEcommerce.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace AspnetEcommercer.Infrastructure.Customer.Repository;
+namespace AspnetEcommerce.Infrastructure.Customer.Repository;
 
 public class CustomerRepositoryEf : ICustomerRepository
 {
@@ -13,6 +13,14 @@ public class CustomerRepositoryEf : ICustomerRepository
     public CustomerRepositoryEf(DatabaseContext db)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
+    }
+
+    public async Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken = default)
+    {
+        var normalizedEmail = email.Trim();
+
+        return await _db.Customers
+            .AnyAsync(c => c.Email == normalizedEmail, cancellationToken);
     }
 
     public async Task AddAsync(CustomerEntity customer, CancellationToken ct = default)

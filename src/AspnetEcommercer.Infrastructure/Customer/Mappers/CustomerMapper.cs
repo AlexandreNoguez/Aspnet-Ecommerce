@@ -1,8 +1,8 @@
-﻿using AspnetEcommercer.Domain.Customer.Entity;
-using AspnetEcommercer.Domain.Customer.ValueObject;
-using AspnetEcommercer.Infrastructure.Customer.Models;
+﻿using AspnetEcommerce.Domain.Customer.Entity;
+using AspnetEcommerce.Domain.Customer.ValueObject;
+using AspnetEcommerce.Infrastructure.Customer.Models;
 
-namespace AspnetEcommercer.Infrastructure.Customer.Mappers;
+namespace AspnetEcommerce.Infrastructure.Customer.Mappers;
 
 public static class CustomerMapper
 {
@@ -12,6 +12,7 @@ public static class CustomerMapper
         {
             Id = entity.Id,
             Name = entity.Name,
+            Email = entity.Email,
             IsActive = entity.IsActive,
             RewardPoints = entity.RewardPoints,
 
@@ -46,6 +47,7 @@ public static class CustomerMapper
         return new CustomerEntity(
             model.Id,
             model.Name,
+            model.Email,
             address,
             model.IsActive,
             model.RewardPoints
@@ -55,6 +57,7 @@ public static class CustomerMapper
     public static void ApplyToDbModel(CustomerEntity entity, CustomerDbModel model)
     {
         model.Name = entity.Name;
+        model.Email = entity.Email;
         model.IsActive = entity.IsActive;
         model.RewardPoints = entity.RewardPoints;
 

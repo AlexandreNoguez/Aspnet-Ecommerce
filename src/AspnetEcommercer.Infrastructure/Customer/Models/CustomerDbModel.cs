@@ -1,9 +1,10 @@
-﻿namespace AspnetEcommercer.Infrastructure.Customer.Models
+﻿namespace AspnetEcommerce.Infrastructure.Customer.Models
 {
     public class CustomerDbModel
     {
         public Guid Id { get; set; }
         public required string Name { get; set; }
+        public required string Email { get; set; }
 
         // Flattened address columns (OK)
         public string? Street { get; set; }

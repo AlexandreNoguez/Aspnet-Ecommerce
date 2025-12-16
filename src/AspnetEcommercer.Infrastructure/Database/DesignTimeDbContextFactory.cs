@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace AspnetEcommercer.Infrastructure.Database
+namespace AspnetEcommerce.Infrastructure.Database
 {
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
     {

@@ -1,8 +1,8 @@
-﻿using AspnetEcommercer.Infrastructure.Customer.Models;
-using AspnetEcommercer.Infrastructure.Database.Mappings;
+﻿using AspnetEcommerce.Infrastructure.Customer.Models;
+using AspnetEcommerce.Infrastructure.Database.Mappings;
 using Microsoft.EntityFrameworkCore;
 
-namespace AspnetEcommercer.Infrastructure.Database
+namespace AspnetEcommerce.Infrastructure.Database
 {
     public class DatabaseContext : DbContext
     {
