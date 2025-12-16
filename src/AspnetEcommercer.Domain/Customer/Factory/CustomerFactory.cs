@@ -1,13 +1,13 @@
-﻿using AspnetEcommercer.Domain.Customer.Entity;
-using AspnetEcommercer.Domain.Customer.ValueObject;
+﻿using AspnetEcommerce.Domain.Customer.Entity;
+using AspnetEcommerce.Domain.Customer.ValueObject;
 
-namespace AspnetEcommercer.Domain.Customer.Factory
+namespace AspnetEcommerce.Domain.Customer.Factory
 {
     public class CustomerFactory
     {
-        public static CustomerEntity CreateNewCustomer(string name, Address address)
+        public static CustomerEntity CreateNewCustomer(string name, string email, Address address)
         {
-            return new CustomerEntity(Guid.NewGuid(), name, address, false, 0);
+            return new CustomerEntity(Guid.NewGuid(), name, email, address, false, 0);
         }
     }
 }

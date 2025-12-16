@@ -1,10 +1,12 @@
-﻿using AspnetEcommercer.Domain.Customer.Entity;
+﻿using AspnetEcommerce.Domain.Customer.Entity;
 
-namespace AspnetEcommercer.Domain.Customer.Repository;
+namespace AspnetEcommerce.Domain.Customer.Repository;
 
 public interface ICustomerRepository
 {
     Task AddAsync(CustomerEntity customer, CancellationToken ct = default);
+    Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken = default);
+
     Task UpdateAsync(CustomerEntity customer, CancellationToken ct = default);
     Task<CustomerEntity?> GetByIdAsync(Guid id, CancellationToken ct = default);
     Task<IReadOnlyList<CustomerEntity>> GetAllAsync(CancellationToken ct = default);

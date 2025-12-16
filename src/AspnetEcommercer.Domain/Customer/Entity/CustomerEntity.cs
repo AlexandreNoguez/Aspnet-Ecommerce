@@ -1,13 +1,15 @@
-﻿using AspnetEcommercer.Domain.Customer.ValueObject;
+﻿using AspnetEcommerce.Domain.Customer.ValueObject;
+using System.Net.Mail;
 
-namespace AspnetEcommercer.Domain.Customer.Entity
+namespace AspnetEcommerce.Domain.Customer.Entity
 {
     public class CustomerEntity
     {
-        public CustomerEntity(Guid id, string name, Address? address, bool isActive, int rewardPoints)
+        public CustomerEntity(Guid id, string name, string email, Address? address, bool isActive, int rewardPoints)
         {
             Id = id;
-            Name = name;
+            SetName(name);
+            SetEmail(email);
             Address = address;
             IsActive = isActive;
             RewardPoints = rewardPoints;
@@ -15,7 +17,8 @@ namespace AspnetEcommercer.Domain.Customer.Entity
         }
 
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
+        public string Name { get; private set; } = null!;
+        public string Email { get; private set; } = null!;
         public Address? Address { get; private set; }
         public bool IsActive { get; private set; }
         public int RewardPoints { get; private set; }
@@ -25,9 +28,9 @@ namespace AspnetEcommercer.Domain.Customer.Entity
             return Id;
         }
 
-        public static CustomerEntity Create(Guid id, string name, Address address)
+        public static CustomerEntity Create(Guid id, string name, string email, Address address)
         {
-            return new CustomerEntity(id, name, address, false, 0);
+            return new CustomerEntity(id, name, email, address, false, 0);
         }
 
         public void Activate()
@@ -36,12 +39,53 @@ namespace AspnetEcommercer.Domain.Customer.Entity
             {
                 throw new Exception("Address is mandatory to activate a customer");
             }
+            if (!IsValidEmail(Email))
+            {
+                throw new Exception("Email is invalid.");
+            }
             IsActive = true;
         }
 
         public void Deactivate()
         {
             IsActive = false;
+        }
+
+        public void SetName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Name is required.", nameof(name));
+            }
+            Name = name.Trim();
+        }
+
+        public void SetEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                throw new ArgumentException("Email is required.", nameof(email));
+            }
+
+            if (!IsValidEmail(email))
+            {
+                throw new ArgumentException("Email is invalid.", nameof(email));
+            }
+
+            Email = email.Trim();
+        }
+
+        private static bool IsValidEmail(string email)
+        {
+            try
+            {
+                _ = new MailAddress(email);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public void AddRewardPoints(int points)

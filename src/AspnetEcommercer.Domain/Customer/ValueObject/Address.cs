@@ -1,4 +1,4 @@
-﻿namespace AspnetEcommercer.Domain.Customer.ValueObject
+﻿namespace AspnetEcommerce.Domain.Customer.ValueObject
 {
     public sealed record Address
     {
