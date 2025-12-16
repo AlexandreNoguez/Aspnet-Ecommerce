@@ -1,8 +1,8 @@
-﻿using AspnetEcommercer.Domain.Contracts.Abstractions;
-using AspnetEcommercer.Infrastructure.Database;
+﻿using AspnetEcommerce.Domain.Contracts.Abstractions;
+using AspnetEcommerce.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace AspnetEcommercer.Infrastructure.Persistence
+namespace AspnetEcommerce.Infrastructure.Persistence
 {
 
 

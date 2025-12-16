@@ -6,10 +6,10 @@
     <Project Path="src/AspnetEcommerce.Application/AspnetEcommerce.Application.csproj" />
   </Folder>
   <Folder Name="/2-Domain/">
-    <Project Path="src/AspnetEcommercer.Domain/AspnetEcommercer.Domain.csproj" />
+    <Project Path="src/AspnetEcommercer.Domain/AspnetEcommerce.Domain.csproj" />
   </Folder>
   <Folder Name="/3-Infrastructure/">
-    <Project Path="src/AspnetEcommercer.Infrastructure/AspnetEcommercer.Infrastructure.csproj" />
+    <Project Path="src/AspnetEcommercer.Infrastructure/AspnetEcommerce.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/4-Test/">
     <Project Path="src/AspnetEcommerce.UnitTest/AspnetEcommerce.UnitTest.csproj" />
