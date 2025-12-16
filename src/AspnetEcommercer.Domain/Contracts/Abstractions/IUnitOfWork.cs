@@ -1,4 +1,4 @@
-﻿namespace AspnetEcommercer.Domain.Contracts.Abstractions
+﻿namespace AspnetEcommerce.Domain.Contracts.Abstractions
 {
     public interface IUnitOfWork
     {
