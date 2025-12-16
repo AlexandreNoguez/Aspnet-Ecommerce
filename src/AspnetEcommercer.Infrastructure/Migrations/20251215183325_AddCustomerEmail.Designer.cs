@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AspnetEcommerce.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20251213153624_Initial")]
-    partial class Initial
+    [Migration("20251215183325_AddCustomerEmail")]
+    partial class AddCustomerEmail
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.1")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -35,6 +35,11 @@ namespace AspnetEcommerce.Infrastructure.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -44,7 +49,6 @@ namespace AspnetEcommerce.Infrastructure.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<int?>("Number")
-                        .HasMaxLength(6)
                         .HasColumnType("integer");
 
                     b.Property<int>("RewardPoints")
