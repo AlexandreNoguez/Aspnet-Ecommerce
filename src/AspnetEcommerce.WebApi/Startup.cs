@@ -1,5 +1,5 @@
-﻿//using AspnetEcommercer.Domain.Contracts.Abstractions;
-//using AspnetEcommercer.Infrastructure.Persistence;
+﻿//using AspnetEcommerce.Domain.Contracts.Abstractions;
+//using AspnetEcommerce.Infrastructure.Persistence;
 //using Microsoft.AspNetCore.Mvc;
 
 //[assembly: ApiController]
