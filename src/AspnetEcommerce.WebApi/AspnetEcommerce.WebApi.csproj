@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AspnetEcommerce.Application\AspnetEcommerce.Application.csproj" />
-    <ProjectReference Include="..\AspnetEcommercer.Infrastructure\AspnetEcommercer.Infrastructure.csproj" />
+    <ProjectReference Include="..\AspnetEcommercer.Infrastructure\AspnetEcommerce.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,10 +1,9 @@
 ﻿using AspnetEcommerce.Application.Customer.DTOs.CreateCustomer;
 using AspnetEcommerce.Application.Customer.UseCases.CreateCustomer;
 using AspnetEcommerce.WebApi.Models.Customers;
-using AspnetEcommercer.WebApi.Models.Customers;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AspnetEcommercer.WebApi.Controllers;
+namespace AspnetEcommerce.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -25,6 +24,7 @@ public class CustomersController : ControllerBase
         // Mapeia Request -> Command (Application)
         var command = new CreateCustomerInput(
             request.Name,
+            request.Email,
             request.Street,
             request.City,
             request.State,
