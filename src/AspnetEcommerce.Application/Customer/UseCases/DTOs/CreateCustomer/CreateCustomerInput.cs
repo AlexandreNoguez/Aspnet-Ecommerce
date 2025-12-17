@@ -2,6 +2,7 @@
 
 public sealed record CreateCustomerInput(
     string Name,
+    string Email,
     string Street,
     string City,
     string State,
