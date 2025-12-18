@@ -1,8 +1,11 @@
 ﻿using AspnetEcommerce.Application.Contracts.Email;
 using AspnetEcommerce.Application.Customer.Contracts.Email;
+using AspnetEcommerce.Application.Customer.UseCases.ActivateCustomer;
 using AspnetEcommerce.Application.Customer.UseCases.CreateCustomer;
 using AspnetEcommerce.Domain.Contracts.Abstractions;
+using AspnetEcommerce.Domain.Customer.Activation;
 using AspnetEcommerce.Domain.Customer.Repository;
+using AspnetEcommerce.Infrastructure.Customer.Activation;
 using AspnetEcommerce.Infrastructure.Customer.Repository;
 using AspnetEcommerce.Infrastructure.Database;
 using AspnetEcommerce.Infrastructure.Email.SmtpConfig;
@@ -38,11 +41,15 @@ public static class DependencyInjection
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<ICustomerEmailTemplateProvider, CustomerEmailTemplateProvider>();
 
+        // Activation token repository
+        services.AddScoped<ICustomerActivationTokenRepository, CustomerActivationTokenRepositoryEf>();
+
         // Worker para consumir fila de e-mails
         services.AddHostedService<WelcomeEmailWorker>();
 
         // Use cases
         services.AddScoped<ICreateCustomerUseCase, CreateCustomerUseCase>();
+        services.AddScoped<IActivateCustomerUseCase, ActivateCustomerUseCase>();
 
         return services;
     }
