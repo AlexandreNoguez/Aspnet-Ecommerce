@@ -13,11 +13,12 @@ namespace AspnetEcommerce.Infrastructure.Database
 
         //public DbSet<CustomerDbModel> Customers { get; set; }
         public DbSet<CustomerDbModel> Customers => Set<CustomerDbModel>();
-        //public DbSet<AddressDbModel> Addresses => Set<AddressDbModel>();
+        public DbSet<CustomerActivationTokenDbModel> CustomerActivationTokens => Set<CustomerActivationTokenDbModel>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+            modelBuilder.ApplyConfiguration(new CustomerActivationTokenConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

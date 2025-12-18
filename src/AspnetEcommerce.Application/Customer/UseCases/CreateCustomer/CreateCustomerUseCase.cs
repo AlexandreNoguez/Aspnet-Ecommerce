@@ -3,37 +3,49 @@ using AspnetEcommerce.Application.Customer.Contracts.Email;
 using AspnetEcommerce.Application.Customer.DTOs.CreateCustomer;
 using AspnetEcommerce.Application.Customer.Exceptions;
 using AspnetEcommerce.Domain.Contracts.Abstractions;
+using AspnetEcommerce.Domain.Customer.Activation;
+using AspnetEcommerce.Domain.Customer.Entity;
 using AspnetEcommerce.Domain.Customer.Factory;
 using AspnetEcommerce.Domain.Customer.Repository;
 using AspnetEcommerce.Domain.Customer.ValueObject;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography;
 
 namespace AspnetEcommerce.Application.Customer.UseCases.CreateCustomer;
 
 public sealed class CreateCustomerUseCase : ICreateCustomerUseCase
 {
     private readonly ICustomerRepository _customerRepository;
+    private readonly ICustomerActivationTokenRepository _activationTokenRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailJobQueue _emailJobQueue;
     private readonly ILogger<CreateCustomerUseCase> _logger;
 
     public CreateCustomerUseCase(
         ICustomerRepository customerRepository,
+        ICustomerActivationTokenRepository activationTokenRepository,
         IUnitOfWork unitOfWork,
         IEmailJobQueue emailJobQueue,
         ILogger<CreateCustomerUseCase> logger)
     {
         _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
+        _activationTokenRepository = activationTokenRepository ?? throw new ArgumentNullException(nameof(activationTokenRepository));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _emailJobQueue = emailJobQueue ?? throw new ArgumentNullException(nameof(emailJobQueue));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    private static string BuildActivationLink(Guid customerId)
+    private static string BuildActivationLink(string token)
     {
         const string baseUrl = "https://localhost:5021/api/customers/activate";
-        // TODO: futuramente trocar customerId por token de ativação
-        return $"{baseUrl}?customerId={customerId}";
+        return $"{baseUrl}?token={Uri.EscapeDataString(token)}";
+    }
+
+    private static string GenerateSecureToken()
+    {
+        // 32 bytes => 256 bits
+        var bytes = RandomNumberGenerator.GetBytes(32);
+        return Convert.ToBase64String(bytes); // vai ser usado em querystring com EscapeDataString
     }
 
     public async Task<CreateCustomerOutput> ExecuteAsync(
@@ -42,34 +54,23 @@ public sealed class CreateCustomerUseCase : ICreateCustomerUseCase
     {
         if (input is null) throw new ArgumentNullException(nameof(input));
 
-        // 1) Validations at Application layer
+        // 1) Validações básicas
         if (string.IsNullOrWhiteSpace(input.Name))
-        {
             throw new ValidationException("Name is required.");
-        }
 
         if (string.IsNullOrWhiteSpace(input.Email))
-        {
             throw new ValidationException("Email is required.");
-        }
 
         var emailAlreadyExists = await _customerRepository
             .EmailExistsAsync(input.Email, cancellationToken);
 
         if (emailAlreadyExists)
-        {
             throw new ValidationException("Email is already in use.");
-        }
 
-        // Vamos guardar só os dados primitivos aqui,
-        // pra não depender do tipo Customer fora do try
-        Guid customerId;
-        string customerName;
-        string customerEmail;
-        bool isActive;
-        int rewardPoints;
+        CustomerEntity customer;
+        CustomerActivationToken activationToken;
 
-        // 2) Database operations (with rollback ONLY for DB errors)
+        // 2) Persiste Customer + ActivationToken (mesmo UnitOfWork)
         try
         {
             var address = Address.Create(
@@ -80,54 +81,59 @@ public sealed class CreateCustomerUseCase : ICreateCustomerUseCase
                 input.Number
             );
 
-            var customer = CustomerFactory.CreateNewCustomer(input.Name, input.Email, address);
+            customer = CustomerFactory.CreateNewCustomer(input.Name, input.Email, address);
 
             await _customerRepository.AddAsync(customer, cancellationToken);
-            await _unitOfWork.CommitAsync(cancellationToken);
 
-            // Copia os dados que vamos precisar depois
-            customerId = customer.Id;
-            customerName = customer.Name;
-            customerEmail = customer.Email;
-            isActive = customer.IsActive;
-            rewardPoints = customer.RewardPoints;
+            var tokenValue = GenerateSecureToken();
+            var expiresAt = DateTimeOffset.UtcNow.AddHours(24);
+
+            activationToken = CustomerActivationToken.CreateNew(
+                customerId: customer.Id,
+                token: tokenValue,
+                expiresAt: expiresAt);
+
+            await _activationTokenRepository.AddAsync(activationToken, cancellationToken);
+
+            await _unitOfWork.CommitAsync(cancellationToken);
         }
-        catch
+        catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(cancellationToken);
-            throw; // DB error still fails the request
+            _logger.LogError(ex, "Error while creating customer {Email}", input.Email);
+            throw;
         }
 
-        // 3) Enqueue welcome email job (DO NOT break the flow if it fails)
+        // 3) Enfileira e-mail de boas-vindas + link de ativação (não quebra o fluxo se falhar)
         try
         {
-            var activationLink = BuildActivationLink(customerId);
+            var activationLink = BuildActivationLink(activationToken.Token);
 
             var job = new WelcomeEmailJob(
-                customerId: customerId,
-                customerName: customerName,
-                customerEmail: customerEmail,
+                customerId: customer.Id,
+                customerName: customer.Name,
+                customerEmail: customer.Email,
                 activationLink: activationLink);
 
             await _emailJobQueue.EnqueueWelcomeEmailAsync(job, cancellationToken);
         }
         catch (Exception ex)
         {
-            // Just log – do NOT rethrow
             _logger.LogError(
                 ex,
                 "Failed to enqueue welcome email for customer {CustomerId} ({Email})",
-                customerId,
-                customerEmail);
+                customer.Id,
+                customer.Email);
+            // Não lança exceção – criação do cliente já foi persistida.
         }
 
-        // 4) Return success (customer was persisted)
+        // 4) Retorno
         return new CreateCustomerOutput(
-            customerId,
-            customerName,
-            customerEmail,
-            isActive,
-            rewardPoints
+            customer.Id,
+            customer.Name,
+            customer.Email,
+            customer.IsActive,
+            customer.RewardPoints
         );
     }
 }
