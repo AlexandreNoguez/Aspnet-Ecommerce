@@ -3,7 +3,7 @@ using AspnetEcommerce.Infrastructure.Customer.Mappers;
 using AspnetEcommerce.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace AspnetEcommerce.Infrastructure.Customer.Activation
+namespace AspnetEcommerce.Infrastructure.Customer.Repository
 {
     public class CustomerActivationTokenRepositoryEf : ICustomerActivationTokenRepository
     {

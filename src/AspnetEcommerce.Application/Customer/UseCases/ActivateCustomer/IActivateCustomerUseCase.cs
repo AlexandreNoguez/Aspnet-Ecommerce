@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using AspnetEcommerce.Application.Customer.DTOs.ActivateCustomer;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AspnetEcommerce.Application.Customer.UseCases.ActivateCustomer

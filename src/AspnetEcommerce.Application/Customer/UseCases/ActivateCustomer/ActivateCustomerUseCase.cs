@@ -1,4 +1,5 @@
-﻿using AspnetEcommerce.Application.Customer.Exceptions;
+﻿using AspnetEcommerce.Application.Customer.DTOs.ActivateCustomer;
+using AspnetEcommerce.Application.Customer.Exceptions;
 using AspnetEcommerce.Domain.Contracts.Abstractions;
 using AspnetEcommerce.Domain.Customer.Activation;
 using AspnetEcommerce.Domain.Customer.Repository;

@@ -1,7 +1,10 @@
 ﻿using AspnetEcommerce.Application.Customer.DTOs.CreateCustomer;
+using AspnetEcommerce.Application.Customer.DTOs.GetAllCustomer;
+using AspnetEcommerce.Application.Customer.DTOs.GetCustomerById;
 using AspnetEcommerce.Application.Customer.UseCases.ActivateCustomer;
 using AspnetEcommerce.Application.Customer.UseCases.CreateCustomer;
-using AspnetEcommerce.Domain.Customer.Repository;
+using AspnetEcommerce.Application.Customer.UseCases.GetAllCustomers;
+using AspnetEcommerce.Application.Customer.UseCases.GetCustomerById;
 using AspnetEcommerce.WebApi.Models.Customers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,13 +16,19 @@ public class CustomersController : ControllerBase
 {
     private readonly ICreateCustomerUseCase _createCustomerUseCase;
     private readonly IActivateCustomerUseCase _activateCustomerUseCase;
-    private readonly ICustomerRepository _customerRepository;
+    private readonly IGetCustomerByIdUseCase _getCustomerByIdUseCase;
+    private readonly IGetAllCustomersUseCase _getAllCustomersUseCase;
     public CustomersController(
          ICreateCustomerUseCase createCustomerUseCase,
-         IActivateCustomerUseCase activateCustomerUseCase)
+         IActivateCustomerUseCase activateCustomerUseCase,
+        IGetCustomerByIdUseCase getCustomerByIdUseCase,
+        IGetAllCustomersUseCase getAllCustomersUseCase)
+
     {
-        _createCustomerUseCase = createCustomerUseCase;
-        _activateCustomerUseCase = activateCustomerUseCase;
+        _createCustomerUseCase = createCustomerUseCase ?? throw new ArgumentNullException(nameof(createCustomerUseCase));
+        _activateCustomerUseCase = activateCustomerUseCase ?? throw new ArgumentNullException(nameof(activateCustomerUseCase));
+        _getCustomerByIdUseCase = getCustomerByIdUseCase ?? throw new ArgumentNullException(nameof(getCustomerByIdUseCase));
+        _getAllCustomersUseCase = getAllCustomersUseCase ?? throw new ArgumentNullException(nameof(getAllCustomersUseCase));
     }
 
     [HttpPost]
@@ -56,6 +65,19 @@ public class CustomersController : ControllerBase
         );
     }
 
+    [HttpGet]
+    public async Task<ActionResult<GetAllCustomersOutput>> GetAll(
+      [FromQuery] int page = 1,
+      [FromQuery] int pageSize = 10,
+      [FromQuery] string? search = null,
+      CancellationToken cancellationToken = default)
+    {
+        var input = new GetAllCustomersInput(page, pageSize, search);
+        var output = await _getAllCustomersUseCase.ExecuteAsync(input, cancellationToken);
+
+        return Ok(output);
+    }
+
     [HttpGet("activate")]
     public async Task<IActionResult> Activate(
     [FromQuery] string token,
@@ -86,10 +108,10 @@ public class CustomersController : ControllerBase
 
     // Só para poder usar no CreatedAtAction (pode implementar depois)
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<object>> GetById(Guid id, CancellationToken ct)
+    public async Task<ActionResult<GetCustomerByIdOutput>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        // Aqui depois você injeta e usa o IGetCustomerUseCase
-
-        return Ok(new { Id = id });
+        var input = new GetCustomerByIdInput(id);
+        var output = await _getCustomerByIdUseCase.ExecuteAsync(input, cancellationToken);
+        return Ok(output);
     }
 }
