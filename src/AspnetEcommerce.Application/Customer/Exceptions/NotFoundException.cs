@@ -1,10 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AspnetEcommerce.Application.Customer.Exceptions
+﻿namespace AspnetEcommerce.Application.Customer.Exceptions
 {
-    internal class NotFoundException
+    public class NotFoundException : Exception
     {
+        public NotFoundException()
+        {
+        }
+        public NotFoundException(string message)
+            : base(message)
+        {
+        }
+        public NotFoundException(string message, Exception inner)
+            : base(message, inner)
+        {
+        }
     }
 }
