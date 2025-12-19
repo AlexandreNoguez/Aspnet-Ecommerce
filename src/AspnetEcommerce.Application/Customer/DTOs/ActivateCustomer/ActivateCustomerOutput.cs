@@ -1,4 +1,4 @@
-﻿namespace AspnetEcommerce.Application.Customer.UseCases.ActivateCustomer
+﻿namespace AspnetEcommerce.Application.Customer.DTOs.ActivateCustomer
 {
     public sealed record ActivateCustomerOutput(
         Guid CustomerId,
