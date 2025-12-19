@@ -42,14 +42,14 @@ public sealed class ActivateCustomerUseCase : IActivateCustomerUseCase
 
         try
         {
+            await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
             // 2) Valida se token está válido
             activation.EnsureIsValid();
 
             // 3) Busca Customer
             var customer = await _customerRepository
                 .GetByIdAsync(activation.CustomerId, cancellationToken);
-
-            Console.WriteLine("customer", customer);
 
             if (customer is null)
                 throw new ValidationException("Customer not found for provided activation token.");

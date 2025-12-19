@@ -1,5 +1,6 @@
 ﻿using AspnetEcommerce.Application.Contracts.Email.Jobs;
 using AspnetEcommerce.Application.Customer.Contracts.Email;
+using AspnetEcommerce.Application.Customer.Contracts.Links;
 using AspnetEcommerce.Application.Customer.DTOs.CreateCustomer;
 using AspnetEcommerce.Application.Customer.Exceptions;
 using AspnetEcommerce.Domain.Contracts.Abstractions;
@@ -20,25 +21,22 @@ public sealed class CreateCustomerUseCase : ICreateCustomerUseCase
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailJobQueue _emailJobQueue;
     private readonly ILogger<CreateCustomerUseCase> _logger;
+    private readonly IActivationLinkBuilder _activationLinkBuilder;
 
     public CreateCustomerUseCase(
         ICustomerRepository customerRepository,
         ICustomerActivationTokenRepository activationTokenRepository,
         IUnitOfWork unitOfWork,
         IEmailJobQueue emailJobQueue,
-        ILogger<CreateCustomerUseCase> logger)
+        ILogger<CreateCustomerUseCase> logger,
+        IActivationLinkBuilder activationLinkBuilder)
     {
         _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
         _activationTokenRepository = activationTokenRepository ?? throw new ArgumentNullException(nameof(activationTokenRepository));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _emailJobQueue = emailJobQueue ?? throw new ArgumentNullException(nameof(emailJobQueue));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
-    private static string BuildActivationLink(string token)
-    {
-        const string baseUrl = "https://localhost:5021/api/customers/activate";
-        return $"{baseUrl}?token={Uri.EscapeDataString(token)}";
+        _activationLinkBuilder = activationLinkBuilder ?? throw new ArgumentNullException(nameof(activationLinkBuilder));
     }
 
     private static string GenerateSecureToken()
@@ -73,6 +71,8 @@ public sealed class CreateCustomerUseCase : ICreateCustomerUseCase
         // 2) Persiste Customer + ActivationToken (mesmo UnitOfWork)
         try
         {
+            await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
             var address = Address.Create(
                 input.Street,
                 input.City,
@@ -107,7 +107,7 @@ public sealed class CreateCustomerUseCase : ICreateCustomerUseCase
         // 3) Enfileira e-mail de boas-vindas + link de ativação (não quebra o fluxo se falhar)
         try
         {
-            var activationLink = BuildActivationLink(activationToken.Token);
+            var activationLink = _activationLinkBuilder.Build(activationToken.Token);
 
             var job = new WelcomeEmailJob(
                 customerId: customer.Id,

@@ -1,5 +1,6 @@
 ﻿using AspnetEcommerce.Application.Contracts.Email;
 using AspnetEcommerce.Application.Customer.Contracts.Email;
+using AspnetEcommerce.Application.Customer.Contracts.Links;
 using AspnetEcommerce.Application.Customer.UseCases.ActivateCustomer;
 using AspnetEcommerce.Application.Customer.UseCases.CreateCustomer;
 using AspnetEcommerce.Application.Customer.UseCases.GetAllCustomers;
@@ -13,6 +14,7 @@ using AspnetEcommerce.Infrastructure.Email.SmtpConfig;
 using AspnetEcommerce.Infrastructure.Email.Templates.CustomerWelcome;
 using AspnetEcommerce.Infrastructure.Messaging;
 using AspnetEcommerce.Infrastructure.Persistence;
+using AspnetEcommerce.WebApi.Infra.Links;
 using Microsoft.EntityFrameworkCore;
 
 namespace AspnetEcommerce.WebApi.Extensions;
@@ -41,6 +43,9 @@ public static class DependencyInjection
         services.Configure<SmtpOptions>(configuration.GetSection("SmtpOptions"));
         services.AddScoped<IEmailSender, SmtpEmailSender>();
         services.AddScoped<ICustomerEmailTemplateProvider, CustomerEmailTemplateProvider>();
+
+        // Activation link builder
+        services.AddScoped<IActivationLinkBuilder, ConfigurationActivationLinkBuilder>();
 
         // Activation token repository
         services.AddScoped<ICustomerActivationTokenRepository, CustomerActivationTokenRepositoryEf>();
