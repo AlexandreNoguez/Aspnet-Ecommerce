@@ -32,5 +32,16 @@ namespace AspnetEcommerce.Infrastructure.Customer.Repository
 
             return CustomerActivationTokenMapper.ToDomain(model);
         }
+
+        public async Task UpdateAsync(CustomerActivationToken token, CancellationToken ct = default)
+        {
+            var model = await _context.CustomerActivationTokens
+                .FirstOrDefaultAsync(x => x.Id == token.Id, ct);
+
+            if (model is null)
+                throw new InvalidOperationException("Activation token not found.");
+
+            model.UsedAt = token.UsedAt;
+        }
     }
 }

@@ -60,6 +60,9 @@ public sealed class ActivateCustomerUseCase : IActivateCustomerUseCase
             // 5) Marca token como usado
             activation.MarkAsUsed();
 
+            await _customerRepository.UpdateAsync(customer, cancellationToken);
+            await _activationTokenRepository.UpdateAsync(activation, cancellationToken);
+
             await _unitOfWork.CommitAsync(cancellationToken);
 
             return new ActivateCustomerOutput(
