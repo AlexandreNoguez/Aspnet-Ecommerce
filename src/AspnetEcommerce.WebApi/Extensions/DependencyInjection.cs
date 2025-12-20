@@ -3,8 +3,11 @@ using AspnetEcommerce.Application.Customer.Contracts.Email;
 using AspnetEcommerce.Application.Customer.Contracts.Links;
 using AspnetEcommerce.Application.Customer.UseCases.ActivateCustomer;
 using AspnetEcommerce.Application.Customer.UseCases.CreateCustomer;
+using AspnetEcommerce.Application.Customer.UseCases.DeleteCustomer;
 using AspnetEcommerce.Application.Customer.UseCases.GetAllCustomers;
-using AspnetEcommerce.Application.Customer.UseCases.GetCustomerById;
+using AspnetEcommerce.Application.Customer.UseCases.GetCustomerByIdUseCase;
+using AspnetEcommerce.Application.Customer.UseCases.SoftDeleteCustomer;
+using AspnetEcommerce.Application.Customer.UseCases.UpdateCustomer;
 using AspnetEcommerce.Domain.Contracts.Abstractions;
 using AspnetEcommerce.Domain.Customer.Activation;
 using AspnetEcommerce.Domain.Customer.Repository;
@@ -58,6 +61,9 @@ public static class DependencyInjection
         services.AddScoped<IActivateCustomerUseCase, ActivateCustomerUseCase>();
         services.AddScoped<IGetAllCustomersUseCase, GetAllCustomersUseCase>();
         services.AddScoped<IGetCustomerByIdUseCase, GetCustomerByIdUseCase>();
+        services.AddScoped<IUpdateCustomerUseCase, UpdateCustomerUseCase>();
+        services.AddScoped<IDeleteCustomerUseCase, DeleteCustomerUseCase>();
+        services.AddScoped<ISoftDeleteCustomerUseCase, SoftDeleteCustomerUseCase>();
 
         return services;
     }

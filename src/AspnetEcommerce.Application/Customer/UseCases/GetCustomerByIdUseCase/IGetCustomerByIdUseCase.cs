@@ -1,6 +1,6 @@
 ﻿using AspnetEcommerce.Application.Customer.DTOs.GetCustomerById;
 
-namespace AspnetEcommerce.Application.Customer.UseCases.GetCustomerById
+namespace AspnetEcommerce.Application.Customer.UseCases.GetCustomerByIdUseCase
 {
     public interface IGetCustomerByIdUseCase
     {

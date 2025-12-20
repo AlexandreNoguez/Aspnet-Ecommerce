@@ -2,7 +2,7 @@
 using AspnetEcommerce.Application.Customer.Exceptions;
 using AspnetEcommerce.Domain.Customer.Repository;
 
-namespace AspnetEcommerce.Application.Customer.UseCases.GetCustomerById;
+namespace AspnetEcommerce.Application.Customer.UseCases.GetCustomerByIdUseCase;
 
 public sealed class GetCustomerByIdUseCase : IGetCustomerByIdUseCase
 {

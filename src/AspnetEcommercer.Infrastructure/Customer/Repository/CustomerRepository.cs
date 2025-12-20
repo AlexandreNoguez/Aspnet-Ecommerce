@@ -97,4 +97,11 @@ public class CustomerRepositoryEf : ICustomerRepository
         _db.Customers.Remove(model);
         // no SaveChanges here
     }
+
+    public async Task SoftDeleteAsync(Guid id, CancellationToken ct = default)
+    {
+        var model = await _db.Customers.FirstOrDefaultAsync(x => x.Id == id, ct);
+        if (model is null) return;
+        model.IsActive = false;
+    }
 }

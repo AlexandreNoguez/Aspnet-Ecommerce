@@ -1,10 +1,16 @@
 ﻿using AspnetEcommerce.Application.Customer.DTOs.CreateCustomer;
+using AspnetEcommerce.Application.Customer.DTOs.DeleteCustomer;
 using AspnetEcommerce.Application.Customer.DTOs.GetAllCustomer;
 using AspnetEcommerce.Application.Customer.DTOs.GetCustomerById;
+using AspnetEcommerce.Application.Customer.DTOs.SoftDeleteCustomer;
+using AspnetEcommerce.Application.Customer.DTOs.UpdateCustomer;
 using AspnetEcommerce.Application.Customer.UseCases.ActivateCustomer;
 using AspnetEcommerce.Application.Customer.UseCases.CreateCustomer;
+using AspnetEcommerce.Application.Customer.UseCases.DeleteCustomer;
 using AspnetEcommerce.Application.Customer.UseCases.GetAllCustomers;
-using AspnetEcommerce.Application.Customer.UseCases.GetCustomerById;
+using AspnetEcommerce.Application.Customer.UseCases.GetCustomerByIdUseCase;
+using AspnetEcommerce.Application.Customer.UseCases.SoftDeleteCustomer;
+using AspnetEcommerce.Application.Customer.UseCases.UpdateCustomer;
 using AspnetEcommerce.WebApi.Models.Customers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,17 +24,27 @@ public class CustomersController : ControllerBase
     private readonly IActivateCustomerUseCase _activateCustomerUseCase;
     private readonly IGetCustomerByIdUseCase _getCustomerByIdUseCase;
     private readonly IGetAllCustomersUseCase _getAllCustomersUseCase;
+    private readonly IUpdateCustomerUseCase _updateCustomerUseCase;
+    private readonly IDeleteCustomerUseCase _deleteCustomerUseCase;
+    private readonly ISoftDeleteCustomerUseCase _softDeleteCustomerUseCase;
+
     public CustomersController(
-         ICreateCustomerUseCase createCustomerUseCase,
-         IActivateCustomerUseCase activateCustomerUseCase,
+        ICreateCustomerUseCase createCustomerUseCase,
+        IActivateCustomerUseCase activateCustomerUseCase,
         IGetCustomerByIdUseCase getCustomerByIdUseCase,
-        IGetAllCustomersUseCase getAllCustomersUseCase)
+        IGetAllCustomersUseCase getAllCustomersUseCase,
+        IUpdateCustomerUseCase updateCustomerUseCase,
+        IDeleteCustomerUseCase deleteCustomerUseCase,
+        ISoftDeleteCustomerUseCase softDeleteCustomerUseCase)
 
     {
         _createCustomerUseCase = createCustomerUseCase ?? throw new ArgumentNullException(nameof(createCustomerUseCase));
         _activateCustomerUseCase = activateCustomerUseCase ?? throw new ArgumentNullException(nameof(activateCustomerUseCase));
         _getCustomerByIdUseCase = getCustomerByIdUseCase ?? throw new ArgumentNullException(nameof(getCustomerByIdUseCase));
         _getAllCustomersUseCase = getAllCustomersUseCase ?? throw new ArgumentNullException(nameof(getAllCustomersUseCase));
+        _updateCustomerUseCase = updateCustomerUseCase ?? throw new ArgumentNullException(nameof(updateCustomerUseCase));
+        _deleteCustomerUseCase = deleteCustomerUseCase ?? throw new ArgumentNullException(nameof(deleteCustomerUseCase));
+        _softDeleteCustomerUseCase = softDeleteCustomerUseCase ?? throw new ArgumentNullException(nameof(softDeleteCustomerUseCase));
     }
 
     [HttpPost]
@@ -113,5 +129,56 @@ public class CustomersController : ControllerBase
         var input = new GetCustomerByIdInput(id);
         var output = await _getCustomerByIdUseCase.ExecuteAsync(input, cancellationToken);
         return Ok(output);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<UpdateCustomerResponse>> UpdateCustomer(
+        Guid id,
+        [FromBody] UpdateCustomerRequest request,
+        CancellationToken cancellationToken)
+    {
+        // Mapeia Request -> Input (Application)
+        var input = new UpdateCustomerInput(
+            id,
+            request.Name,
+            request.Email,
+            request.Street,
+            request.City,
+            request.State,
+            request.ZipCode,
+            request.Number,
+            request.RewardPoints
+        );
+        var result = await _updateCustomerUseCase.ExecuteAsync(input, cancellationToken);
+        var response = new UpdateCustomerResponse
+        {
+            Id = result.Id,
+            Name = result.Name,
+            Email = result.Email,
+            IsActive = result.IsActive,
+            RewardPoints = result.RewardPoints,
+            Street = result.Street,
+            City = result.City,
+            State = result.State,
+            ZipCode = result.ZipCode,
+            Number = result.Number
+        };
+        return Ok(response);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteCustomer(Guid id, CancellationToken cancellationToken)
+    {
+        var input = new DeleteCustomerInput(id);
+        await _deleteCustomerUseCase.ExecuteAsync(input, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPatch]
+    public async Task<IActionResult> SoftDeleteCustomer(Guid id, CancellationToken cancellationToken)
+    {
+        var input = new SoftDeleteCustomerInput(id);
+        await _softDeleteCustomerUseCase.ExecuteAsync(input, cancellationToken);
+        return NoContent();
     }
 }
