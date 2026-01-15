@@ -10,6 +10,16 @@ using AspnetEcommerce.Application.Customer.UseCases.SoftDeleteCustomer;
 using AspnetEcommerce.Application.Customer.UseCases.UpdateCustomer;
 using AspnetEcommerce.Application.Product.UseCases.CreateCategory;
 using AspnetEcommerce.Application.Product.UseCases.CreateProduct;
+using AspnetEcommerce.Application.Product.UseCases.DeleteCategory;
+using AspnetEcommerce.Application.Product.UseCases.DeleteProduct;
+using AspnetEcommerce.Application.Product.UseCases.GetAllCategories;
+using AspnetEcommerce.Application.Product.UseCases.GetAllProducts;
+using AspnetEcommerce.Application.Product.UseCases.GetCategoryById;
+using AspnetEcommerce.Application.Product.UseCases.GetProductById;
+using AspnetEcommerce.Application.Product.UseCases.SoftDeleteCategory;
+using AspnetEcommerce.Application.Product.UseCases.SoftDeleteProduct;
+using AspnetEcommerce.Application.Product.UseCases.UpdateCategory;
+using AspnetEcommerce.Application.Product.UseCases.UpdateProduct;
 using AspnetEcommerce.Domain.Contracts.Abstractions;
 using AspnetEcommerce.Domain.Customer.Activation;
 using AspnetEcommerce.Domain.Customer.Repository;
@@ -74,6 +84,16 @@ public static class DependencyInjection
         // Products and Categories use cases would be registered here similarly
         services.AddScoped<ICreateProductUseCase, CreateProductUseCase>();
         services.AddScoped<ICreateCategoryUseCase, CreateCategoryUseCase>();
+        services.AddScoped<IGetAllProductsUseCase, GetAllProductsUseCase>();
+        services.AddScoped<IGetAllCategoriesUseCase, GetAllCategoriesUseCase>();
+        services.AddScoped<IGetProductByIdUseCase, GetProductByIdUseCase>();
+        services.AddScoped<IGetCategoryByIdUseCase, GetCategoryByIdUseCase>();
+        services.AddScoped<IUpdateProductUseCase, UpdateProductUseCase>();
+        services.AddScoped<IUpdateCategoryUseCase, UpdateCategoryUseCase>();
+        services.AddScoped<IDeleteProductUseCase, DeleteProductUseCase>();
+        services.AddScoped<IDeleteCategoryUseCase, DeleteCategoryUseCase>();
+        services.AddScoped<ISoftDeleteProductUseCase, SoftDeleteProductUseCase>();
+        services.AddScoped<ISoftDeleteCategoryUseCase, SoftDeleteCategoryUseCase>();
 
         return services;
     }
