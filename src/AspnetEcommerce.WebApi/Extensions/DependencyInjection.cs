@@ -8,15 +8,19 @@ using AspnetEcommerce.Application.Customer.UseCases.GetAllCustomers;
 using AspnetEcommerce.Application.Customer.UseCases.GetCustomerByIdUseCase;
 using AspnetEcommerce.Application.Customer.UseCases.SoftDeleteCustomer;
 using AspnetEcommerce.Application.Customer.UseCases.UpdateCustomer;
+using AspnetEcommerce.Application.Product.UseCases.CreateCategory;
+using AspnetEcommerce.Application.Product.UseCases.CreateProduct;
 using AspnetEcommerce.Domain.Contracts.Abstractions;
 using AspnetEcommerce.Domain.Customer.Activation;
 using AspnetEcommerce.Domain.Customer.Repository;
+using AspnetEcommerce.Domain.Product.Repository;
 using AspnetEcommerce.Infrastructure.Customer.Repository;
 using AspnetEcommerce.Infrastructure.Database;
 using AspnetEcommerce.Infrastructure.Email.SmtpConfig;
 using AspnetEcommerce.Infrastructure.Email.Templates.CustomerWelcome;
 using AspnetEcommerce.Infrastructure.Messaging;
 using AspnetEcommerce.Infrastructure.Persistence;
+using AspnetEcommerce.Infrastructure.Product.Repository;
 using AspnetEcommerce.WebApi.Infra.Links;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,6 +41,8 @@ public static class DependencyInjection
 
         // Repository (Infra)
         services.AddScoped<ICustomerRepository, CustomerRepositoryEf>();
+        services.AddScoped<IProductRepository, ProductRepositoryEf>();
+        services.AddScoped<ICategoryRepository, CategoryRepositoryEf>();
 
         // RabbitMQ options + fila
         services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMq"));
@@ -64,6 +70,10 @@ public static class DependencyInjection
         services.AddScoped<IUpdateCustomerUseCase, UpdateCustomerUseCase>();
         services.AddScoped<IDeleteCustomerUseCase, DeleteCustomerUseCase>();
         services.AddScoped<ISoftDeleteCustomerUseCase, SoftDeleteCustomerUseCase>();
+
+        // Products and Categories use cases would be registered here similarly
+        services.AddScoped<ICreateProductUseCase, CreateProductUseCase>();
+        services.AddScoped<ICreateCategoryUseCase, CreateCategoryUseCase>();
 
         return services;
     }
